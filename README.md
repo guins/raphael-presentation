@@ -1,3 +1,3 @@
-# RaphaelJS Presentation (demo source code)
+## RaphaelJS Demo (source code)
 
-[Slides](http://slid.es/stephaneguigne/raphaeljs-presentation)
+[Link to slides](http://slid.es/stephaneguigne/raphaeljs-presentation)
