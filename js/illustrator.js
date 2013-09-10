@@ -3,8 +3,7 @@
 
 	Raphael.fn.myApp = {
 		createHeadPart : function(partName){
-			var partNameArr = partName.split('-'),
-				partPath = APP_DATA.partsData.paths[ partNameArr[partNameArr.length-1] ],
+			var partPath = _makeSureItsAPath( APP_DATA.partsData.paths[partName] ),
 				part = this.path(partPath);
 			
 			part
@@ -15,11 +14,12 @@
 		}
 	};
 
-	Raphael.el.assembled = function(relativePoint){
+	Raphael.el.assembled = function(relativePoint, randomProps){
 		var partProps = _processDataProps( APP_DATA.partsData.props[this.data('partName')]() ),
 			props = {
 				transform : 't'+(relativePoint.x+partProps.x)+','+(relativePoint.y+partProps.y)+'r'+partProps.r,
-				fill      : partProps.c
+				fill      : APP_DATA.firmColor,
+				opacity   : randomProps.o
 			}
 		this.stop().animate(props, APP_DATA.animData.speed, APP_DATA.animData.ease);
 
@@ -42,6 +42,21 @@
 
 		return this;
 	};
+
+	function _makeSureItsAPath( path ){
+		if( path.split('')[0] !== 'M' ){
+			var pointsArr = path.split(/\s+/),
+				realPath = '';
+			for( var i = 0, len = pointsArr.length; i < len; i++ ){
+			    realPath += (i && "L" || "M") + pointsArr[i];
+			}
+			realPath += 'z';
+			return realPath;
+		}
+		else {
+			return path;
+		}
+	}
 
 	function _processDataProps(props){
 		if(typeof props.x === 'object'){
@@ -75,6 +90,7 @@
 		container,
 		paper,
 		head,
+		disassembleBtn,
 		assembled = false;
 
 	function _initDemo(){
@@ -83,8 +99,16 @@
 		head = paper.set();
 
 		_createHeadParts();
+		_createToggleBtn();
 
-		container.onclick = _changeHeadAppearence;
+		container.ondblclick = _changeHeadAppearence;
+	}
+
+	function _createToggleBtn(){
+		disassembleBtn = paper
+							.rect(10,10, 100, 40)
+							.attr({ fill : '#000' })
+							.click(function(){ _changeHeadAppearence(); });
 	}
 
 	function _createHeadParts(){
@@ -94,22 +118,21 @@
 
 		for (var i = 0; i < nbOfParts; i++) {
 			var part = paper.myApp.createHeadPart.call(paper, headParts[i]);
-			
+
 			part.disassembled( _getRandomProps(), true );
 			head.push( part );
 		};
 	}
 
 	function _changeHeadAppearence(event){
-		
-		if( !assembled ){
-			var clickedPoint = {
+
+		if( event ){
+			var cursorPoint = {
 				x : event.x,
 				y : event.y
-			};
-			
+			}
 			head.forEach(function(part){
-				part.assembled(clickedPoint);
+				part.assembled(cursorPoint, _getRandomProps());
 			});
 
 			assembled = true;
@@ -121,7 +144,7 @@
 
 			assembled = false;
 		}
-	};
+	}
 
 	function _getRandomProps(){
 		var marge = 100;
