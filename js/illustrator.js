@@ -2,7 +2,7 @@
 	'use strict';
 
 	Raphael.fn.myApp = {
-		createHeadPart : function(partName){
+		createObjectPart : function(partName){
 			var partPath = _makeSureItsAPath( APP_DATA.partsData.paths[partName] ),
 				part = this.path(partPath);
 			
@@ -18,7 +18,6 @@
 		var partProps = _processDataProps( APP_DATA.partsData.props[this.data('partName')]() ),
 			props = {
 				transform : 't'+(relativePoint.x+partProps.x)+','+(relativePoint.y+partProps.y)+'r'+partProps.r,
-				fill      : APP_DATA.firmColor,
 				opacity   : randomProps.o
 			}
 		this.stop().animate(props, APP_DATA.animData.speed, APP_DATA.animData.ease);
@@ -30,7 +29,7 @@
 		var props = {
 				transform : 't'+(randomProps.x)+','+(randomProps.y)+'r'+randomProps.r,
 				opacity   : randomProps.o,
-				fill      : '#222222'
+				fill      : APP_DATA.firmColor
 			}
 
 		if( withoutAnim ){
@@ -89,56 +88,56 @@
 		wH = window.innerHeight,
 		container,
 		paper,
-		head,
+		obj,
 		disassembleBtn,
 		assembled = false;
 
 	function _initDemo(){
 		container = document.getElementById('paper'),
 		paper = Raphael(container, wW, wH);
-		head = paper.set();
+		obj = paper.set();
 
-		_createHeadParts();
+		_createObjectParts();
 		_createToggleBtn();
 
-		container.ondblclick = _changeHeadAppearence;
+		container.ondblclick = _changeObjectAppearence;
 	}
 
 	function _createToggleBtn(){
 		disassembleBtn = paper
 							.rect(10,10, 100, 40)
 							.attr({ fill : '#000' })
-							.click(function(){ _changeHeadAppearence(); });
+							.click(function(){ _changeObjectAppearence(); });
 	}
 
-	function _createHeadParts(){
+	function _createObjectParts(){
 
-		var headParts = APP_DATA.partsNames,
-			nbOfParts = headParts.length;
+		var objParts = APP_DATA.partsNames,
+			nbOfParts = objParts.length;
 
 		for (var i = 0; i < nbOfParts; i++) {
-			var part = paper.myApp.createHeadPart.call(paper, headParts[i]);
+			var part = paper.myApp.createObjectPart.call(paper, objParts[i]);
 
 			part.disassembled( _getRandomProps(), true );
-			head.push( part );
+			obj.push( part );
 		};
 	}
 
-	function _changeHeadAppearence(event){
+	function _changeObjectAppearence(event){
 
 		if( event ){
 			var cursorPoint = {
 				x : event.x,
 				y : event.y
 			}
-			head.forEach(function(part){
+			obj.forEach(function(part){
 				part.assembled(cursorPoint, _getRandomProps());
 			});
 
 			assembled = true;
 		}
 		else {
-			head.forEach(function(part){
+			obj.forEach(function(part){
 				part.disassembled( _getRandomProps() );
 			});
 

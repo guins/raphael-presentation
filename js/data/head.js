@@ -1,5 +1,7 @@
 var APP_DATA = {
-	firmColor : 'blue',
+	firmColor : (function(){
+		return '#'+Math.floor(Math.random()*16777215).toString(16);
+	})(),
 	partsNames : ['head', 'left-eye', 'right-eye', 'left-eyebrow', 'right-eyebrow', 'noze', 'mouth', 'hair', 'beard', 'right-ear'],
 	partsData : {
 		paths : {
@@ -88,7 +90,7 @@ var APP_DATA = {
 		}
 	},
 	animData : {
-		speed   : 800,
+		speed   : 500,
 		ease  : 'cubic-bezier(0.120, 0.735, 0.405, 1)'
 	}
 };

@@ -1,38 +1,39 @@
 (function(Raphael){
 	'use strict';
 
-	Raphael.fn.myApp = {
-		createShot : function(x, y, succeded){
-			var size = 20,
-				shot;
+	Raphael.fn.createShot = function(x, y, succeded){
+		var size = 20,
+			shot;
 
-			if(succeded){
-				shot = this.myApp._createShotIn.apply(this, [x, y, size]);
-			}
-			else {
-				shot = this.myApp._createshotMissed.apply(this, [x, y, size]);
-			}
+		if(succeded){
+			shot = this._createShotIn(x, y, size);
+		}
+		else {
+			shot = this._createshotMissed(x, y);
+		}
 
-			shot
-				.data('succeded', succeded)
-				.shotNormalized(true)
-				.hover(function(){
-					this.shotHighlited();
-				},
-				function(){
-					this.shotNormalized();
-				});
+		shot
+			.data('succeded', succeded)
+			.shotNormalized(true)
+			.hover(function(){
+				this.shotHighlited();
+			},
+			function(){
+				this.shotNormalized();
+			});
 
-			return shot;
-		},
-		_createShotIn : function(x, y, size){
-			return this.circle(x, y, size);
-		},
-		_createshotMissed : function(x, y, size){
-			var shot = this.path('M-22,-6h16v-16h12v16h16v12h-16v16h-12v-16h-16z');
-			shot.data('transformDefault', 't'+x+','+y+'r45');
-			return shot;
-		},
+		return shot;
+	};
+
+
+	Raphael.fn._createShotIn = function(x, y, size){
+		return this.circle(x, y, size);
+	};
+
+	Raphael.fn._createshotMissed = function(x, y){
+		var shot = this.path('M-22,-6h16v-16h12v16h16v12h-16v16h-12v-16h-16z');
+		shot.data('transformDefault', 't'+x+','+y+'r45');
+		return shot;
 	};
 
 	Raphael.el.shotNormalized = function(withoutAnim){
@@ -86,19 +87,23 @@
 		shots;
 
 	function _initDemo(){
-		paper = Raphael(document.getElementById('paper'), wW, wH);
-		shots = paper.set();
-		_createRandomShots(300);
+		paper = Raphael(document.getElementById('paper'), wW, wH); //Create Paper
+
+		_createRandomShots(300); // Create shots
 	}
 
 	function _createRandomShots(nbOfShots){
+		paper.setStart();
+
 		for (var i = 0; i < nbOfShots; i++) {
 			var randomX = Math.random()*wW >> 0,
 				randomY = Math.random()*wH >> 0,
 				randomSucces = Math.round(Math.random()*1) === 1;
-			console.log(randomSucces);
-			shots.push( paper.myApp.createShot.apply(paper, [randomX, randomY, randomSucces]) );
+			
+			paper.createShot(randomX, randomY, randomSucces);
 		}
+
+		shots = paper.setFinish(); // Get all element added to paper since last 'setStart'
 	}
 	
 	// Wait loading
